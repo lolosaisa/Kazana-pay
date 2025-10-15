@@ -1,0 +1,1 @@
+# Adds “Pay with Base” button to any post/page via shortcode [kazanapay_button amount="1.00" label="Pay with Base"]
