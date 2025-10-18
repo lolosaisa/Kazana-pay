@@ -3,7 +3,7 @@
  * Plugin Name: Kazana Pay
  * Description: Pay with Base (USDC) plugin for WordPress, shopify and wix.
  * Version: 0.1
- * Author: Lolo Saisa
+ * Author: Loise Mburu
  */
 
 <?php
@@ -52,6 +52,7 @@ function kazanapay_admin_menu() {
     add_options_page('Kazana Pay Settings', 'Kazana Pay', 'manage_options', 'kazanapay', 'kazanapay_settings_page');
 }
 add_action('admin_menu', 'kazanapay_admin_menu');
+
 
 function kazanapay_settings_page() {
     if (!current_user_can('manage_options')) return;
