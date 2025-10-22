@@ -1,8 +1,8 @@
 import { pay, getPaymentStatus } from "https://unpkg.com/@base-org/account?module";
-import { ethers } from "https://cdn.ethers.io/lib/ethers-5.6.umd.min.js";
+import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js";
 import NFTReceiptABI from "./contracts/NFTReceipt.json";
 
-const contractAddress = "YOUR_DEPLOYED_CONTRACT_ADDRESS";
+const contractAddress = "0x4CF66dD38Df708Ffc86BE841f179317541c5f74E";
 
 async function mintNFTReceipt(buyerAddress, purchaseId, tokenURI) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
