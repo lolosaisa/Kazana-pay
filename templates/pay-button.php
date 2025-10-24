@@ -1,54 +1,19 @@
-# HTML structure for checkout button
-<button id="checkout-button">Checkout</button><?php
+<?php
 /**
- * Kazana Pay Button Template
- * Displays the “Pay with Base” button and hooks JS SDK
+ * Template: Kazana Pay Button
+ * Displays the “Pay with Base” button and relies on kazana-pay.js for logic.
  */
 
 $merchant_wallet = get_option('kazana_pay_wallet');
 ?>
 
-<div id="kazanaPayContainer" class="kazana-pay-wrapper">
+<div id="kazanaPayContainer" class="kazana-pay-wrapper"
+     data-merchant="<?php echo esc_attr($merchant_wallet); ?>">
   <button id="kazanaPayButton" class="kazana-pay-button">
     💸 Pay with Base
   </button>
   <div id="kazanaPayStatus" class="kazana-pay-status"></div>
 </div>
-
-<script type="module">
-  import { pay, getPaymentStatus } from "https://unpkg.com/@base-org/account?module";
-
-  const payBtn = document.querySelector("#kazanaPayButton");
-  const statusDiv = document.querySelector("#kazanaPayStatus");
-
-  payBtn.addEventListener("click", async () => {
-    statusDiv.textContent = "⏳ Connecting wallet...";
-
-    try {
-      const payment = await pay({
-        amount: "1.00", // USD amount
-        to: "<?php echo esc_js($merchant_wallet); ?>", // Merchant wallet from settings
-        testnet: true, // Testnet mode
-      });
-
-      statusDiv.textContent = `💰 Payment initiated (ID: ${payment.id})...`;
-
-      const { status } = await getPaymentStatus({
-        id: payment.id,
-        testnet: true,
-      });
-
-      if (status === "completed") {
-        statusDiv.textContent = " Payment successful! 🎉";
-      } else {
-        statusDiv.textContent = "⌛ Payment pending...";
-      }
-    } catch (error) {
-      console.error("Payment failed:", error);
-      statusDiv.textContent = `Payment failed: ${error.message}`;
-    }
-  });
-</script>
 
 <style>
 .kazana-pay-button {

@@ -1,5 +1,5 @@
 // admin.js
-import { ethers } from "https://cdn.ethers.io/lib/ethers-5.6.umd.min.js";
+import { ethers } from "ethers";
 import NFTReceiptABI from "./contracts/NFTReceipt.json";
 
 // ----------------------------
