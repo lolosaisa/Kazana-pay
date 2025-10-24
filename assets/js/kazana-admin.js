@@ -1,6 +1,6 @@
 // admin.js
 import { BrowserProvider,   Contract, ethers } from "ethers";
-import NFTReceiptABI from "./contracts/NFTReceipt.json";
+import NFTReceiptABI from "../../contracts/NFTReceipt.json";
 
 // ----------------------------
 // Config

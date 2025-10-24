@@ -206,18 +206,33 @@ function kazanapay_settings_page() {
  */
 function kazanapay_enqueue_scripts() {
     // Frontend bundle (must be built with your bundler, no raw ES imports)
+   
+    // Load ethers from CDN
     wp_enqueue_script(
-        'kazanapay-frontend',
-        plugin_dir_url( __FILE__ ) . 'assets/js/kazana-pay.bundle.js',
-        array(),
-        '1.0.0',
-        true
+    'ethers-js',
+    'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
+    array(),
+    null,
+    true,
+    ['type' => 'module']
     );
+
+    // Then load your bundled file
+    wp_enqueue_script(
+    'kazanapay-js',
+    plugins_url('/assets/js/dist/kazana-pay.bundle.js', __FILE__),
+    array('ethers-js', 'jquery'),
+    '1.0',
+    true,
+    ['type' => 'module']
+    );
+
+    
 
     // Localize config for the frontend bundle
     $opts = get_option( 'kazanapay_options', array() );
     wp_localize_script(
-        'kazanapay-frontend',
+        'kazanapay-js',
         'kazanapayConfig',
         array(
             'merchantAddress' => isset( $opts['merchant_address'] ) ? $opts['merchant_address'] : '',
@@ -244,7 +259,8 @@ function kazanapay_admin_enqueue( $hook ) {
         plugin_dir_url( __FILE__ ) . 'assets/js/kazana-admin.bundle.js',
         array(),
         '1.0.0',
-        true
+        true,
+        ['type' => 'module']
     );
 
     // pass ajaxUrl if admin script needs it

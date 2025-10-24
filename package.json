@@ -2,6 +2,12 @@
   "dependencies": {
     "@base-org/account": "^2.4.0",
     "@base-org/account-ui": "^1.0.1",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "vite": "^7.1.12"
   }
 }
