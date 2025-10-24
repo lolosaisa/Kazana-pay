@@ -17,7 +17,7 @@
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 function kazanapay_enqueue_scripts() {
-    wp_enqueue_script('ethers', 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js', array(), null, true);
+    wp_enqueue_script('ethers', 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.jshttps://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js', array(), null, true);
     wp_enqueue_script('kazanapay-js', plugins_url('/assets/kazanapay.js', __FILE__), array('ethers'), null, true);
     wp_localize_script('kazanapay-js', 'KazanaPayConfig', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),

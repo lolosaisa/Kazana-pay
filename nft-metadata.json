@@ -1,0 +1,34 @@
+{
+  "name": "KazanaPay Receipt #{{tokenId}}",
+  "description": "Proof of purchase for order #{{orderId}} via Kazana Pay on the {{network}} network.",
+  "attributes": [
+    {
+      "trait_type": "Buyer Address",
+      "value": "{{buyerAddress}}"
+    },
+    {
+      "trait_type": "Merchant",
+      "value": "{{merchantName}}"
+    },
+    {
+      "trait_type": "Amount (USDC)",
+      "value": "{{amount}}"
+    },
+    {
+      "trait_type": "Transaction ID",
+      "value": "{{txHash}}"
+    },
+    {
+      "trait_type": "Payment Status",
+      "value": "{{status}}"
+    },
+    {
+      "trait_type": "Purchase Date",
+      "value": "{{timestamp}}"
+    },
+    {
+      "trait_type": "Network",
+      "value": "{{network}}"
+    }
+  ]
+}
