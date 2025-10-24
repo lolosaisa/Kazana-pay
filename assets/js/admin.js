@@ -5,7 +5,7 @@ import NFTReceiptABI from "./contracts/NFTReceipt.json";
 // ----------------------------
 // Config
 // ----------------------------
-const contractAddress = "0x4CF66dD38Df708Ffc86BE841f179317541c5f74E";
+const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
 
 // ----------------------------
 // Wallet Connection
