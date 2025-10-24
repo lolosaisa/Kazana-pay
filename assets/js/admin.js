@@ -1,5 +1,5 @@
 // admin.js
-import { ethers } from "ethers";
+import { BrowserProvider,   Contract, ethers } from "ethers";
 import NFTReceiptABI from "./contracts/NFTReceipt.json";
 
 // ----------------------------
@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
+        // Request account access
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
@@ -59,10 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const contract = new ethers.Contract(contractAddress, NFTReceiptABI, provider);
+      
 
       try {
+
+        const provider = new BrowserProvider(window.ethereum);
+        const contract = new Contract(contractAddress, NFTReceiptABI, provider);
+        
+        //calling the verifier receipt function
         const isOwner = await contract.verifyReceipt(purchaseId, buyerAddress);
 
         if (isOwner) {
