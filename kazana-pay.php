@@ -16,16 +16,28 @@
 
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+//enqueue kazana-pay.js script
+// This script handles the payment logic and interacts with the Base network
 function kazanapay_enqueue_scripts() {
-    wp_enqueue_script('ethers', 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.jshttps://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js', array(), null, true);
-    wp_enqueue_script('kazanapay-js', plugins_url('/assets/kazanapay.js', __FILE__), array('ethers'), null, true);
-    wp_localize_script('kazanapay-js', 'KazanaPayConfig', array(
-        'ajaxUrl' => admin_url('admin-ajax.php'),
-        'pluginNonce' => wp_create_nonce('kazanapay_nonce'),
-        'usdcAddress' => get_option('kazanapay_usdc_address', ''), // set via admin
-        'baseRpc' => get_option('kazanapay_base_rpc', ''), // set via admin
-        'merchantAddress' => get_option('kazanapay_merchant_address', ''),
-    ));
+
+    wp_enqueue_script(
+        'kazanapay-js',
+        plugins_url( '/assets/js/kazana-pay.js', __FILE__ ),
+        array( 'jquery' ),
+        '1.0',
+        true 
+    );
+
+    //Pass the PHP data eg. merchant address, USDC contract address, and RPC URL to the JS file
+    wp_localize_script( 
+        'kazanapay-js', 
+        'KazanaPayConfig', 
+        array(
+            'merchantAddress' => get_option('kazanapay_merchant_address', ''),
+            'testnet' => true, // Set to false for mainnet
+        )
+    );
+  
 }
 add_action('wp_enqueue_scripts', 'kazanapay_enqueue_scripts');
 
