@@ -8,14 +8,13 @@ import { pay, getPaymentStatus } from "base-org/account";
 import { BrowserProvider, Contract, ethers } from "ethers";
 import { NFTStorage, Blob } from "nft.storage";
 import NFTReceiptABI from "../../contracts/NFTReceipt.json";
+import lighthouse from '@lighthouse-web3/sdk'; // ✅ Using Lighthouse instead of nft.storage
+
 
 // 🏗️ Deployed contract address on Base Testnet
 const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
 
-// 🌐 Initialize NFT.Storage client
-const nftStorageClient = new NFTStorage({
-  token: window.NFT_STORAGE_API_KEY || "YOUR_PUBLIC_NFT_STORAGE_TOKEN",
-});
+
 
 // 🧾 Handle full payment + mint flow
 async function handlePayment() {
@@ -52,11 +51,17 @@ async function handlePayment() {
         ],
       };
 
+      console.log("📄 NFT metadata prepared:", metadata);
+
       // Step 4️: Upload metadata to IPFS
-      const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-      const cid = await nftStorageClient.storeBlob(blob);
-      const metadataURI = `ipfs://${cid}`;
-      console.log("📦 Metadata uploaded to IPFS:", metadataURI);
+      //  Upload metadata to IPFS using Lighthouse
+        const apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY;
+        const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+        const uploadResponse = await lighthouse.uploadBuffer(blob, apiKey);
+        const cid = uploadResponse.data.Hash;
+        const metadataURI = `ipfs://${cid}`;
+        console.log("📦 Metadata uploaded to IPFS via Lighthouse:", metadataURI);
+      
 
       // Step 5️⃣: Mint NFT Receipt Onchain
       const provider = new BrowserProvider(window.ethereum);
@@ -71,6 +76,26 @@ async function handlePayment() {
         payment.id,                   // orderId (reuse same)
         metadataURI
       );
+      
+      console.table({
+          Buyer: wallet,
+          Merchant: merchantAddress,
+          Amount: amount,
+          PaymentID: payment.id,
+          IPFS_URI: metadataURI,
+          Status: payStatus,
+        });
+
+        setNftDetails({
+          buyer: wallet,
+          merchant: merchantAddress,
+          amount,
+          paymentId: payment.id,
+          ipfs: metadataURI,
+          txHash: txHash,
+       });
+
+
 
       await tx.wait();
       console.log("🎉 NFT receipt minted successfully!", tx.hash);

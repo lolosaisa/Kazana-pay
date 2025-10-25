@@ -2,6 +2,7 @@
   "dependencies": {
     "@base-org/account": "^2.4.0",
     "@base-org/account-ui": "^1.0.1",
+    "@lighthouse-web3/sdk": "^0.4.3",
     "dotenv": "^17.2.3",
     "ethers": "^6.15.0"
   },
