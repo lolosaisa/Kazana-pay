@@ -271,6 +271,16 @@ function kazanapay_admin_enqueue( $hook ) {
 }
 add_action( 'admin_enqueue_scripts', 'kazanapay_admin_enqueue' );
 
+// ✅ Tell WordPress to treat Kazana Pay JS as a module
+function kazanapay_add_module_type($tag, $handle, $src) {
+    if ($handle === 'kazanapay-js') {
+        return '<script type="module" src="' . esc_url($src) . '"></script>';
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'kazanapay_add_module_type', 10, 3);
+
+
 
 /**
  * Shortcode to render button
