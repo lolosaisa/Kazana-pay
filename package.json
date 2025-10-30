@@ -1,4 +1,13 @@
 {
+  "name": "kazana-pay",
+  "version": "1.0.0",
+  "description": "A WordPress plugin that enables merchants to receive USDC payments via Base and mint NFT receipts for buyers.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@base-org/account": "^2.4.0",
     "@base-org/account-ui": "^1.0.1",
