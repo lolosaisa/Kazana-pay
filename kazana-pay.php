@@ -271,6 +271,7 @@ function kazanapay_admin_enqueue( $hook ) {
 }
 add_action( 'admin_enqueue_scripts', 'kazanapay_admin_enqueue' );
 
+
 /**
  * Shortcode to render button
  * Usage: [kazanapay_button amount="1.00" label="Pay with Base"]
@@ -284,7 +285,7 @@ function kazanapay_button_shortcode( $atts ) {
     ob_start();
     ?>
     <div class="kazanapay-checkout">
-        <button id="kazanapay-button" class="kazanapay-pay-btn" data-amount="<?php echo esc_attr( $atts['amount'] ); ?>">
+        <button id="kazanaPayButton" class="kazanapay-pay-btn" data-amount="<?php echo esc_attr( $atts['amount'] ); ?>">
             <?php echo esc_html( $atts['label'] ); ?>
         </button>
         <div id="kazanapay-status" class="kazanapay-status" aria-live="polite"></div>
@@ -293,3 +294,4 @@ function kazanapay_button_shortcode( $atts ) {
     return ob_get_clean();
 }
 add_shortcode( 'kazanapay_button', 'kazanapay_button_shortcode' );
+
