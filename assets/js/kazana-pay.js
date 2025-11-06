@@ -4,9 +4,8 @@
 // ================================
 
 // Import required dependencies
-import { pay, getPaymentStatus } from "base-org/account";
+//import { pay, getPaymentStatus } from "base-org/account";
 import { BrowserProvider, Contract, ethers } from "ethers";
-import { NFTStorage, Blob } from "nft.storage";
 import NFTReceiptABI from "../../contracts/NFTReceipt.json";
 import lighthouse from '@lighthouse-web3/sdk'; // ✅ Using Lighthouse instead of nft.storage
 
@@ -18,10 +17,20 @@ const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
 
 // 🧾 Handle full payment + mint flow
 async function handlePayment() {
+  //instead of using an import for base.
+    const { pay, getPaymentStatus } = window.base; // 👈 from global SDK
+
   // Ensure wallet connection
   const wallet = await window.ethereum.request({ method: "eth_requestAccounts" });
   const buyer = wallet[0];
-  const merchant = window.kazanaMerchantAddress; // localized from PHP
+ // const merchant = window.kazanaMerchantAddress; // localized from PHP
+
+ const merchant =
+  window.kazanaPayData?.merchant ||
+  window.kazanapayConfig?.merchantAddress ||
+  '';
+  console.log("🧾 Using merchant address:", merchant);
+
   const amount = kazanaPayData?.amount || "1.00"; // fallback for testing
 
   try {
@@ -112,7 +121,9 @@ async function handlePayment() {
 }
 
 // ⏳ Wait for DOM and attach button listener
-document.addEventListener("DOMContentLoaded", () => {
+//document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
+
   const payBtn = document.querySelector("#kazanaPayButton");
   //const statusDiv = document.querySelector("#kazanaPayStatus");
   
