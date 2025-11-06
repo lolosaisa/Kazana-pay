@@ -201,49 +201,102 @@ function kazanapay_settings_page() {
 
 /**
  * Enqueue frontend and admin scripts (bundled)
- *
- * NOTE: Your JS must be compiled/bundled to these paths (see build steps below)
  */
 function kazanapay_enqueue_scripts() {
-    // Frontend bundle (must be built with your bundler, no raw ES imports)
-   
-    // Load ethers from CDN
+    // 1️⃣ Load Ethers.js first (global dependency)
     wp_enqueue_script(
-    'ethers-js',
-    'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
-    array(),
-    null,
-    true,
-    ['type' => 'module']
+        'ethers-js',
+        //'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
+        'https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js',
+        array(),
+        null,
+        true
     );
 
-    // Then load your bundled file
-    wp_enqueue_script(
-    'kazanapay-js',
-    plugins_url('/assets/js/dist/kazana-pay.bundle.js', __FILE__),
-    array('ethers-js', 'jquery'),
-    '1.0',
-    true,
-    ['type' => 'module']
-    );
-
+    // 2️⃣ Load Base-org/account (or your replacement) next — must exist globally!
     
+    wp_enqueue_script(
+        'base-account-sdk',
+        'https://cdn.jsdelivr.net/npm/@base-org/account/dist/base-account.min.js',
+        array(),
+        null,
+        true
+    );
 
-    // Localize config for the frontend bundle
-    $opts = get_option( 'kazanapay_options', array() );
+    // 3️⃣ Finally, load your Kazana Pay bundle (depends on ethers + base-org)
+    wp_enqueue_script(
+        'kazanapay-js',
+        plugins_url('/assets/js/dist/kazana-pay.bundle.js', __FILE__),
+        array('ethers-js', 'base-account-sdk', 'jquery'),
+        '1.0',
+        true
+    );
+
+    // 🧠 Load options once
+   $opts = get_option('kazanapay_options', array());
+
+    wp_localize_script(
+    'kazanapay-js',
+    'kazanaPayData',
+    array(
+        'amount'   => '1.00', // Temporary static test amount
+        'merchant' => $opts['merchant_address'] ?? '',
+        'testnet'  => true,
+        'ajaxUrl'  => admin_url('admin-ajax.php'),
+    )
+);
+
+    // 4️⃣ Pass localized config to your bundle
+    $opts = get_option('kazanapay_options', array());
     wp_localize_script(
         'kazanapay-js',
         'kazanapayConfig',
         array(
-            'merchantAddress' => isset( $opts['merchant_address'] ) ? $opts['merchant_address'] : '',
-            'usdcAddress'     => isset( $opts['usdc_address'] ) ? $opts['usdc_address'] : '',
-            'baseRpc'         => isset( $opts['base_rpc'] ) ? $opts['base_rpc'] : '',
-            'mode'            => isset( $opts['mode'] ) ? $opts['mode'] : 'testnet',
-            'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+            'merchantAddress' => $opts['merchant_address'] ?? '',
+            'usdcAddress'     => $opts['usdc_address'] ?? '',
+            'baseRpc'         => $opts['base_rpc'] ?? '',
+            'mode'            => $opts['mode'] ?? 'testnet',
+            'ajaxUrl'         => admin_url('admin-ajax.php'),
         )
     );
+
+    // 🧩 Inline test to confirm Kazana Pay bundle actually loads
+   wp_add_inline_script(
+    'kazanapay-js',
+    "console.log('✅ Kazana Pay bundle loaded'); console.log('Config:', kazanapayConfig);"
+   );
+
+   // 🧪 Inline script to test button click detection
+wp_add_inline_script(
+    'kazanapay-js',
+    "
+    window.addEventListener('load', function() {
+        console.log('✅ Window fully loaded (Elementor + DOM ready)');
+        const btn = document.getElementById('kazanaPayButton');
+        if (btn) {
+            console.log('Button found ✅');
+            btn.addEventListener('click', function() {
+                console.log('🎯 Kazana Pay button clicked!');
+                alert('Button click detected - Kazana Pay working');
+            });
+        } else {
+            console.warn('⚠️ Kazana Pay button not found on page.');
+        }
+    });
+    "
+);
+
+
+// Optional: Add security attributes
+    wp_script_add_data('base-account-sdk', 'integrity', 'sha384-XXXXXX...');
+    wp_script_add_data('base-account-sdk', 'crossorigin', 'anonymous');
+
+
 }
-add_action( 'wp_enqueue_scripts', 'kazanapay_enqueue_scripts' );
+add_action('wp_enqueue_scripts', 'kazanapay_enqueue_scripts');
+
+
+
 
 /**
  * Enqueue admin script only on our settings page
@@ -278,7 +331,9 @@ function kazanapay_add_module_type($tag, $handle, $src) {
     }
     return $tag;
 }
-add_filter('script_loader_tag', 'kazanapay_add_module_type', 10, 3);
+
+//remove this frontend bundle from being treated as a module
+//add_filter('script_loader_tag', 'kazanapay_add_module_type', 10, 3);
 
 
 
