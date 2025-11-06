@@ -1,18 +1,9 @@
-// admin.js
-import { BrowserProvider,   Contract, ethers } from "ethers";
-import NFTReceiptABI from "../../contracts/NFTReceipt.json";
+// Ethers is now loaded globally via CDN
 
-// ----------------------------
-// Config
-// ----------------------------
-const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
-
-// ----------------------------
-// Wallet Connection
-// ----------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const connectBtn = document.querySelector("#kazanaConnectWalletBtn");
   const walletInput = document.querySelector("input[name='kazana_pay_wallet']");
+  const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
 
   if (connectBtn && walletInput) {
     connectBtn.addEventListener("click", async (e) => {
@@ -24,17 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        // Request account access
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         const account = accounts[0];
-
         walletInput.value = account;
         connectBtn.textContent = "✅ Connected";
         connectBtn.disabled = true;
-
-        console.log("Merchant wallet connected:", account);
       } catch (err) {
         console.error("Wallet connection failed:", err);
         alert("Failed to connect wallet. Please try again.");
@@ -42,9 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ----------------------------
-  // NFT Verification Buttons
-  // ----------------------------
   document.querySelectorAll(".verifyNFTBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const purchaseId = btn.dataset.purchaseId;
@@ -60,22 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      
-
       try {
-
-        const provider = new BrowserProvider(window.ethereum);
-        const contract = new Contract(contractAddress, NFTReceiptABI, provider);
-        
-        //calling the verifier receipt function
+        const provider = new window.ethers.BrowserProvider(window.ethereum);
+        const contract = new window.ethers.Contract(contractAddress, window.NFTReceiptABI, provider);
         const isOwner = await contract.verifyReceipt(purchaseId, buyerAddress);
 
         if (isOwner) {
-          alert(` NFT verified for purchase ${purchaseId}`);
-          btn.textContent = "Verified ";
+          alert(`NFT verified for purchase ${purchaseId}`);
+          btn.textContent = "Verified";
           btn.disabled = true;
         } else {
-          alert(` No NFT found for purchase ${purchaseId}`);
+          alert(`No NFT found for purchase ${purchaseId}`);
         }
       } catch (err) {
         console.error("NFT verification failed:", err);
@@ -84,6 +61,94 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+// // admin.js
+// import { BrowserProvider,   Contract, ethers } from "ethers";
+// import NFTReceiptABI from "../../contracts/NFTReceipt.json";
+
+// // ----------------------------
+// // Config
+// // ----------------------------
+// const contractAddress = "0x1624dc212740660abc2e6e53fcd79ee121737048";
+
+// // ----------------------------
+// // Wallet Connection
+// // ----------------------------
+// document.addEventListener("DOMContentLoaded", () => {
+//   const connectBtn = document.querySelector("#kazanaConnectWalletBtn");
+//   const walletInput = document.querySelector("input[name='kazana_pay_wallet']");
+
+//   if (connectBtn && walletInput) {
+//     connectBtn.addEventListener("click", async (e) => {
+//       e.preventDefault();
+
+//       if (!window.ethereum) {
+//         alert("MetaMask or a Base-compatible wallet is required.");
+//         return;
+//       }
+
+//       try {
+//         // Request account access
+//         const accounts = await window.ethereum.request({
+//           method: "eth_requestAccounts",
+//         });
+//         const account = accounts[0];
+
+//         walletInput.value = account;
+//         connectBtn.textContent = "✅ Connected";
+//         connectBtn.disabled = true;
+
+//         console.log("Merchant wallet connected:", account);
+//       } catch (err) {
+//         console.error("Wallet connection failed:", err);
+//         alert("Failed to connect wallet. Please try again.");
+//       }
+//     });
+//   }
+
+//   // ----------------------------
+//   // NFT Verification Buttons
+//   // ----------------------------
+//   document.querySelectorAll(".verifyNFTBtn").forEach((btn) => {
+//     btn.addEventListener("click", async () => {
+//       const purchaseId = btn.dataset.purchaseId;
+//       const buyerAddress = btn.dataset.buyerAddress;
+
+//       if (!purchaseId || !buyerAddress) {
+//         alert("Missing purchase ID or buyer address.");
+//         return;
+//       }
+
+//       if (!window.ethereum) {
+//         alert("Ethereum wallet required for verification.");
+//         return;
+//       }
+
+      
+
+//       try {
+
+//         const provider = new BrowserProvider(window.ethereum);
+//         const contract = new Contract(contractAddress, NFTReceiptABI, provider);
+        
+//         //calling the verifier receipt function
+//         const isOwner = await contract.verifyReceipt(purchaseId, buyerAddress);
+
+//         if (isOwner) {
+//           alert(` NFT verified for purchase ${purchaseId}`);
+//           btn.textContent = "Verified ";
+//           btn.disabled = true;
+//         } else {
+//           alert(` No NFT found for purchase ${purchaseId}`);
+//         }
+//       } catch (err) {
+//         console.error("NFT verification failed:", err);
+//         alert("Error verifying NFT. Check console for details.");
+//       }
+//     });
+//   });
+// });
 
 // A connect button with id="kazanaConnectWalletBtn"
 
