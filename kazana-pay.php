@@ -203,6 +203,19 @@ function kazanapay_settings_page() {
  * Enqueue frontend and admin scripts (bundled)
  */
 function kazanapay_enqueue_scripts() {
+
+      //  Load only on WooCommerce checkout
+    if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+        return;
+    }
+
+    // Ensure WooCommerce cart is available
+    if ( function_exists( 'WC' ) && WC()->cart ) {
+        $cart_total = WC()->cart->get_total( 'edit' ); // numeric format
+    } else {
+        $cart_total = '1.00';
+    }
+
     // 1️⃣ Load Ethers.js first (global dependency)
     wp_enqueue_script(
         'ethers-js',
@@ -234,12 +247,23 @@ function kazanapay_enqueue_scripts() {
 
     // 🧠 Load options once
    $opts = get_option('kazanapay_options', array());
+   $ksh_to_usd_rate = 130; // Fixed conversion rate
+
+    $cart_total = WC()->cart ? WC()->cart->get_total( '' ) : 0;
+    $currency = get_woocommerce_currency();
+
+    if ($currency === 'KES') {
+        $usd_amount = floatval($cart_total) / $ksh_to_usd_rate;
+    } else {
+        $usd_amount = floatval($cart_total);
+    }
 
     wp_localize_script(
     'kazanapay-js',
     'kazanaPayData',
     array(
-        'amount'   => '1.00', // Temporary static test amount
+        //'amount'   => $cart_total, // 🪄 Actual WooCommerce total
+        'amount'   => number_format($usd_amount, 2, '.', ''),
         'merchant' => $opts['merchant_address'] ?? '',
         'testnet'  => true,
         'ajaxUrl'  => admin_url('admin-ajax.php'),
@@ -258,6 +282,11 @@ function kazanapay_enqueue_scripts() {
             'mode'            => $opts['mode'] ?? 'testnet',
             'ajaxUrl'         => admin_url('admin-ajax.php'),
         )
+    );
+
+    wp_add_inline_script(
+        'kazanapay-js',
+        "console.log('✅ Kazana Pay loaded only on checkout'); console.log('Woo total:', '" . esc_js( $cart_total ) . "');"
     );
 
     // 🧩 Inline test to confirm Kazana Pay bundle actually loads
@@ -359,4 +388,3 @@ function kazanapay_button_shortcode( $atts ) {
     return ob_get_clean();
 }
 add_shortcode( 'kazanapay_button', 'kazanapay_button_shortcode' );
-
